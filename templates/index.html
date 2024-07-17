@@ -32,12 +32,17 @@
 </head>
 <body>
     <div class="container">
-        <h1>Text Generation App</h1>
+        <h1>Text Generation</h1>
         <textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
+        <h4>Temperature</h4>
         <input type="number" id="temperature" placeholder="Temperature (0.0 - 1.0)" step="0.1" value="0.7">
-        <input type="number" id="max_tokens" placeholder="Max Tokens" value="100">
+        <h4>Max Tokens</h4>
+        <input type="number" id="max_tokens" placeholder="Max Tokens" value="30">
         <button onclick="generateText()">Generate Text</button>
+        <h3>Output</h3>
         <div id="output" class="output"></div>
+        <button id="copyButton" onclick="copyToClipboard()">Copy to Clipboard</button>
+
     </div>
 
     <script>
@@ -56,6 +61,25 @@
 
             const text = await response.json();
             document.getElementById('output').innerText = text;
+        }
+
+        function copyToClipboard(){
+            // Get the output element
+            var copyText = document.getElementById('output').innerText;
+            var tempTextArea = document.createElement('textarea');
+            tempTextArea.value = copyText;
+            document.body.appendChild(tempTextArea);
+
+            // Select the text inside the output box
+            tempTextArea.select();
+
+            // Copy the text inside the textbox to clipboard
+            document.execCommand('copy');
+
+            document.body.removeChild(tempTextArea);
+
+            // Alert to confirm copied text
+            alert('Copied the text: ' + copyText);
         }
     </script>
 </body>
