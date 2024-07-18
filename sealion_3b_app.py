@@ -16,11 +16,18 @@ def home():
 def generate_text():
     data = request.json
     prompt = data.get('prompt', '')
+    purpose = data.get('purpose','textGeneration')
     temperature = data.get('temperature', 0.7)
     max_tokens = data.get('max_tokens', 100)
 
+    # Update prompt if used for Question and Answer
+    if purpose=="questionAnswer":
+        prompt=f"""Question: {prompt}
+        
+        Answer:"""
+
     # Tokenize input prompt
-    tokens = tokenizer(prompt, return_tensors="pt")
+    tokens = tokenizer(text=prompt, return_tensors="pt")
     
     # Generate text
     output = model.generate(
@@ -32,6 +39,11 @@ def generate_text():
     )
     
     generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+    # Remove question if doing Question and Answer
+    if purpose=="questionAnswer":
+        prompt_end_posn = len(prompt)
+        generated_text = generated_text[prompt_end_posn:].strip()
 
     return jsonify(generated_text)
 
