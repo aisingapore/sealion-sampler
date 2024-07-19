@@ -17,14 +17,22 @@ def generate_text():
     data = request.json
     prompt = data.get('prompt', '')
     purpose = data.get('purpose','textGeneration')
+    language = data.get('language','English')
     temperature = data.get('temperature', 0.7)
-    max_tokens = data.get('max_tokens', 100)
+    max_tokens = data.get('max_tokens', 50)
+    stop_strings= None
 
     # Update prompt if used for Question and Answer
     if purpose=="questionAnswer":
         prompt=f"""Question: {prompt}
         
         Answer:"""
+        stop_strings = ['Question:']
+
+    elif purpose=="translation":
+        prompt=f"""'{prompt}'
+
+        In {language}, this translates to: """
 
     # Tokenize input prompt
     tokens = tokenizer(text=prompt, return_tensors="pt")
@@ -35,15 +43,21 @@ def generate_text():
         max_new_tokens=max_tokens,
         do_sample=True,
         temperature=temperature,
-        eos_token_id=tokenizer.eos_token_id
+        stop_strings=stop_strings,
+        eos_token_id=tokenizer.eos_token_id,
+        tokenizer=tokenizer
     )
     
     generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
     # Remove question if doing Question and Answer
-    if purpose=="questionAnswer":
+    if purpose!="textGeneration":
         prompt_end_posn = len(prompt)
         generated_text = generated_text[prompt_end_posn:].strip()
+        if purpose=="questionAnswer":
+            # Remove stop_strings from generated_text
+            for stop_string in stop_strings:
+                generated_text = generated_text.replace(stop_string, '')
 
     return jsonify(generated_text)
 

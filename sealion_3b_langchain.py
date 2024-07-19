@@ -9,20 +9,19 @@ tokenizer = AutoTokenizer.from_pretrained("aisingapore/sea-lion-3b", trust_remot
 model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_remote_code=True)
 
 # Simple Text Generation
-pipe=pipeline(
-    task="text-generation",
-    model=model,
-    do_sample=True,
-    tokenizer=tokenizer,
-    max_new_tokens=30,
-    temperature=0.7
-)
+# pipe=pipeline(
+#     task="text-generation",
+#     model=model,
+#     do_sample=True,
+#     tokenizer=tokenizer,
+#     max_new_tokens=30,
+#     temperature=0.7
+# )
 
-local_llm = HuggingFacePipeline(pipeline=pipe)
+# local_llm = HuggingFacePipeline(pipeline=pipe)
 
-# print(local_llm("The sea lion is a"))
-chain = local_llm | StrOutputParser()
-print(chain.invoke("The sea lion is a"))
+# chain = local_llm | StrOutputParser()
+# print(chain.invoke("The sea lion is a"))
 
 # Output(PASS): 
 """The sea lion is a marine mammal that is found in the Pacific Ocean. It is a large animal that is about 10 feet long and weighs about 1,0"""
@@ -91,39 +90,40 @@ A mammal is a type of animal that has a backbone."""
 """
 
 # For Translation in LangChain
-# pipe=pipeline(
-#     task="translation",
-#     model=model,
-#     tokenizer=tokenizer,
-#     max_new_tokens=30
-# )
+pipe=pipeline(
+    task="translation",
+    model=model,
+    tokenizer=tokenizer,
+    max_new_tokens=40,
+    max_length=400
+)
 
-# local_llm = HuggingFacePipeline(pipeline=pipe)
+local_llm = HuggingFacePipeline(pipeline=pipe)
 
-# template = """Translate the following into {language}: {text}
+template = """{text}
 
-# Answer: """
+In {language}, this translates to: """
 
-# prompt = PromptTemplate(template=template, input_variables=["text","language"])
+prompt = PromptTemplate(template=template, input_variables=["text","language"])
 
-# chain = prompt | local_llm | StrOutputParser()
+chain = prompt | local_llm | StrOutputParser()
 
-# print("######## Print chain.invoke\n")
-# print(chain.invoke(
-#     {
-#         "text":"""
-#         'Pada suatu masa dahulu, terdapat satu keluarga yang miskin dan ayahnya bekerja sebagai buruh di ladang getah.Dalam hidup ini, Allah telah memberikan kita semua peluang untuk berjaya.'
-#         """,
-#         "language":"English"
-#     }
-# ))
+print("######## Print chain.invoke\n")
+print(chain.invoke(
+    {
+        "text":"""
+        'Seekor rubah merah yang lincah melompati seekor anjing coklat yang malas.'
+        """,
+        "language":"English"
+    }
+))
 
-# Output(FAIL): Translation function not supported. Text generation mode also fails to translate.
+# Output(PASS):
 """
-Translate the following into English: 
-        'Pada suatu masa dahulu, terdapat satu keluarga yang miskin dan ayahnya bekerja sebagai buruh di ladang getah.Dalam hidup ini, Allah telah memberikan kita semua peluang untuk berjaya.'
+'Pada suatu masa dahulu, terdapat satu keluarga yang miskin dan ayahnya bekerja sebagai buruh di ladang getah.Dalam hidup ini, Allah telah memberikan kita semua peluang untuk berjaya.'
         
 
-Answer: 
+In English, this translates to: 
 
+'In the past, there was a family that was poor and the father worked as a labourer in the rubber plantation. In life, Allah
 """
