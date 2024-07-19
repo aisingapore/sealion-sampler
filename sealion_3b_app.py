@@ -19,7 +19,7 @@ def generate_text():
     purpose = data.get('purpose','textGeneration')
     language = data.get('language','English')
     temperature = data.get('temperature', 0.7)
-    max_tokens = data.get('max_tokens', 50)
+    max_tokens = data.get('max_tokens', 40)
     stop_strings= None
 
     # Update prompt if used for Question and Answer
