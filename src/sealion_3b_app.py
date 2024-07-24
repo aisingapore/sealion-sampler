@@ -11,6 +11,9 @@ load_dotenv()
 # Get the API URL and model from environment variables
 API_URL = os.getenv('API_URL')
 API_MODEL = os.getenv('API_MODEL')
+# For inference farm
+INF_API_URL = os.getenv('INF_API_URL')
+INF_API_KEY = os.getenv('INF_API_KEY')
 
 app = Flask(__name__)
 
@@ -54,9 +57,11 @@ def generate_text():
             stop_strings=stop_strings,
             purpose=purpose
             )
-    elif model == 'online':
+    elif model == 'ollama':
         # Handle the request by sending it to the online API
-        generated_text = api_gen_text(prompt)
+        generated_text = oll_gen_text(prompt)
+    elif 'tgi' in model:
+        generated_text = tgi_gen_text(prompt,model)
 
     return jsonify(generated_text)
 
@@ -88,7 +93,8 @@ def local_gen_text(prompt,max_tokens,temperature,stop_strings,purpose):
 
     return gen_text
 
-def api_gen_text(prompt):
+def oll_gen_text(prompt):
+    print("Using ollama model")
     # Read API_URL and API_MODEL from environment variables
     payload = {
         "model": API_MODEL,
@@ -111,6 +117,56 @@ def api_gen_text(prompt):
             if json_line.get("done") and json_line.get("done_reason") == "stop":
                 break
         return full_response
+    else:
+        return f"Error: {response.status_code}"
+    
+def tgi_gen_text(prompt,model):
+    print("Using tgi inference farm")
+    model_list = {
+        'tgi-sealion':'aisingapore/sea-lion-7b-instruct',
+        'tgi-llama':'unsloth/llama-3-8b-Instruct'
+    }
+    model_choice = model_list.get(model)
+    print("Using model: ", model_choice)
+    headers = {
+        'Content-Type': 'application/json',
+        'x-api-key':INF_API_KEY
+    }
+
+    payload = {
+        "frequency_penalty": 1,
+        "logit_bias": [
+            0
+        ],
+        "logprobs": False,
+        "max_tokens": 32,
+        "messages": [
+            {
+            "content": prompt,
+            "role": "user"
+            }
+        ],
+        "model": model_choice,
+        "n": 2,
+        "presence_penalty": 0.1,
+        "seed": 42,
+        "stop": None,
+        "stream": False,
+        "temperature": 1,
+        "tool_prompt": "\"You will be presented with a JSON schema representing a set of tools.\nIf the user request lacks of sufficient information to make a precise tool selection: Do not invent any tool's properties, instead notify with an error message.\n\nJSON Schema:\n\"",
+        "tools": None,
+        "top_logprobs": 5,
+        "top_p": 0.95
+        }
+    response = requests.post(
+        INF_API_URL, json=payload, headers=headers
+        )
+    print("\nresponse: ",response)
+    print(response.text)
+    
+    if response.status_code == 200:
+        response_str = response.json().get("choices")[0]['message']['content']
+        return response_str
     else:
         return f"Error: {response.status_code}"
 
