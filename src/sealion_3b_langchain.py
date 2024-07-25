@@ -3,7 +3,7 @@ from langchain.chains.llm import LLMChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFacePipeline
-from transformers import AutoTokenizer, AutoModelForCausalLM,pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 tokenizer = AutoTokenizer.from_pretrained("aisingapore/sea-lion-3b", trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_remote_code=True)
@@ -23,7 +23,7 @@ model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_re
 # chain = local_llm | StrOutputParser()
 # print(chain.invoke("The sea lion is a"))
 
-# Output(PASS): 
+# Output(PASS):
 """The sea lion is a marine mammal that is found in the Pacific Ocean. It is a large animal that is about 10 feet long and weighs about 1,0"""
 
 # Summarization: Seems to be unable to support summarization via pipeline.
@@ -38,7 +38,7 @@ model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_re
 
 # print(local_llm("Sea lions are pinnipeds characterized by external ear flaps, long foreflippers, the ability to walk on all fours, short and thick hair, and a big chest and belly. Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion) in five genera. Their range extends from the subarctic to tropical waters of the global ocean in both the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean."))
 
-# Output(FAIL): 
+# Output(FAIL):
 """Sea lions are pinnipeds characterized by external ear flaps, long foreflippers, the ability to walk on all fours, short and thick hair, and a big chest and belly. Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion) in five genera. Their range extends from the subarctic to tropical waters of the global ocean in both the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean.
 The sea lions are the largest pinnipeds in the world, with a body mass of 1,000–1,50"""
 
@@ -76,7 +76,7 @@ A mammal is a type of animal that has a backbone."""
 # print(chain.invoke(
 #     """
 #     'Sea lions are pinnipeds characterized by external ear flaps, long foreflippers, the ability to walk on all fours, short and thick hair, and a big chest and belly. Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion) in five genera. Their range extends from the subarctic to tropical waters of the global ocean in both the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean.'
-#     """    
+#     """
 # ))
 
 # Output:
@@ -90,13 +90,7 @@ A mammal is a type of animal that has a backbone."""
 """
 
 # For Translation in LangChain
-pipe=pipeline(
-    task="translation",
-    model=model,
-    tokenizer=tokenizer,
-    max_new_tokens=40,
-    max_length=400
-)
+pipe = pipeline(task="translation", model=model, tokenizer=tokenizer, max_new_tokens=40, max_length=400)
 
 local_llm = HuggingFacePipeline(pipeline=pipe)
 
@@ -104,19 +98,21 @@ template = """{text}
 
 In {language}, this translates to: """
 
-prompt = PromptTemplate(template=template, input_variables=["text","language"])
+prompt = PromptTemplate(template=template, input_variables=["text", "language"])
 
 chain = prompt | local_llm | StrOutputParser()
 
 print("######## Print chain.invoke\n")
-print(chain.invoke(
-    {
-        "text":"""
+print(
+    chain.invoke(
+        {
+            "text": """
         'Seekor rubah merah yang lincah melompati seekor anjing coklat yang malas.'
         """,
-        "language":"English"
-    }
-))
+            "language": "English",
+        }
+    )
+)
 
 # Output(PASS):
 """
