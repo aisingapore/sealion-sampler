@@ -3,17 +3,18 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import requests
 from dotenv import load_dotenv
 import os
-import json
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Get the API URL and model from environment variables
-API_URL = os.getenv('API_URL')
-API_MODEL = os.getenv('API_MODEL')
-# For inference farm
-INF_API_URL = os.getenv('INF_API_URL')
-INF_API_KEY = os.getenv('INF_API_KEY')
+OLL_API_URL = os.getenv('OLL_API_URL')
+OLL_API_MODEL = os.getenv('OLL_API_MODEL')
+# For TGI inference server with multiple models
+TGI_API_URL = os.getenv('TGI_API_URL')
+TGI_API_KEY = os.getenv('TGI_API_KEY')
+TGI_SEALION = os.getenv('TGI_SEALION')
+TGI_LLAMA = os.getenv('TGI_LLAMA')
 
 app = Flask(__name__)
 
@@ -59,9 +60,9 @@ def generate_text():
             )
     elif model == 'ollama':
         # Handle the request by sending it to the online API
-        generated_text = oll_gen_text(prompt)
+        generated_text = oll_gen_text(prompt,temperature,max_tokens)
     elif 'tgi' in model:
-        generated_text = tgi_gen_text(prompt,model)
+        generated_text = tgi_gen_text(prompt,model,temperature,max_tokens)
 
     return jsonify(generated_text)
 
@@ -93,44 +94,40 @@ def local_gen_text(prompt,max_tokens,temperature,stop_strings,purpose):
 
     return gen_text
 
-def oll_gen_text(prompt):
+def oll_gen_text(prompt,temperature,max_tokens):
     print("Using ollama model")
     # Read API_URL and API_MODEL from environment variables
     payload = {
-        "model": API_MODEL,
-        "prompt": prompt
+        "model": OLL_API_MODEL,
+        "prompt": prompt,
+        "stream":False,
+        "options":{
+            "temperature":temperature,
+            "max_new_tokens":max_tokens
+        }
     }
     headers = {
         'Content-Type': 'application/json'
     }
-    response = requests.post(API_URL, json=payload, headers=headers)
+    response = requests.post(OLL_API_URL, json=payload, headers=headers)
     
     if response.status_code == 200:
-        response_text = response.text
-        lines = response_text.splitlines()
-
-        full_response = ""
-
-        for line in lines:
-            json_line = json.loads(line)
-            full_response += json_line.get("response", "")
-            if json_line.get("done") and json_line.get("done_reason") == "stop":
-                break
-        return full_response
+        print(response.text)
+        return response.json().get("response")
     else:
         return f"Error: {response.status_code}"
     
-def tgi_gen_text(prompt,model):
-    print("Using tgi inference farm")
+def tgi_gen_text(prompt,model,temperature,max_tokens):
+    print("Using tgi inference server")
     model_list = {
-        'tgi-sealion':'aisingapore/sea-lion-7b-instruct',
-        'tgi-llama':'unsloth/llama-3-8b-Instruct'
+        'tgi-sealion':TGI_SEALION,
+        'tgi-llama':TGI_LLAMA
     }
     model_choice = model_list.get(model)
     print("Using model: ", model_choice)
     headers = {
         'Content-Type': 'application/json',
-        'x-api-key':INF_API_KEY
+        'x-api-key':TGI_API_KEY
     }
 
     payload = {
@@ -139,7 +136,7 @@ def tgi_gen_text(prompt,model):
             0
         ],
         "logprobs": False,
-        "max_tokens": 32,
+        "max_tokens": max_tokens,
         "messages": [
             {
             "content": prompt,
@@ -152,14 +149,14 @@ def tgi_gen_text(prompt,model):
         "seed": 42,
         "stop": None,
         "stream": False,
-        "temperature": 1,
+        "temperature": temperature,
         "tool_prompt": "\"You will be presented with a JSON schema representing a set of tools.\nIf the user request lacks of sufficient information to make a precise tool selection: Do not invent any tool's properties, instead notify with an error message.\n\nJSON Schema:\n\"",
         "tools": None,
         "top_logprobs": 5,
         "top_p": 0.95
         }
     response = requests.post(
-        INF_API_URL, json=payload, headers=headers
+        TGI_API_URL, json=payload, headers=headers
         )
     print("\nresponse: ",response)
     print(response.text)
