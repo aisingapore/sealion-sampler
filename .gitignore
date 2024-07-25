@@ -1,2 +1,4 @@
 /jax
 __pycache__
+.env
+test_*

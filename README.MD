@@ -44,7 +44,7 @@ pip install -r requirements.txt
 To test the model with a simple prompt, run the following Python script via terminal:
 
 ```sh
-python sealion_3b_prompt.py
+python src.sealion_3b_prompt.py
 ```
 It will prompt the model with the string `The sea lion is a` and should return a continuation of this sentence.
 
@@ -53,15 +53,15 @@ It will prompt the model with the string `The sea lion is a` and should return a
 To start up the Flask app:
 
 ```sh
-flask -A sealion_3b_app run
+flask -A src.sealion_3b_app run
 ```
 OR
 ```sh
-python sealion_3b_app.py
+python src.sealion_3b_app.py
 ```
 Once the terminal returns the following, you should proceed to access the app via [port 5000](http://127.0.0.1:5000):
 ```sh
- * Serving Flask app 'sealion_3b_app'
+ * Serving Flask app 'src.sealion_3b_app'
  * Debug mode: off
 WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
  * Running on http://127.0.0.1:5000
@@ -75,13 +75,13 @@ Currently there are three functions available, which prompt the base LLM differe
 
 
 There are two parameters provided:
-- Temperature (Default: `40`, Range:`0.0-1.0`)
+- Temperature (Default: `0.7`, Range:`0.0-1.0`)
 - Max New Tokens (Default: `40`)
 
 ### For Further Exploration
 To run the script for prompting via LangChain:
 
 ```sh
-python sealion_3b_langchain.py
+python src.sealion_3b_langchain.py
 ```
 This script is currently a work in progress, with different parts commented out to test different ways of prompting the SEA-LION base model. Feel free to experiment with the script!

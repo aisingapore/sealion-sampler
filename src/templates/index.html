@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEA-LION-3B App</title>
+    <title>SEA-LION Playground App</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,11 +32,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>SEA-LION-3B</h1>
+        <h1>SEA-LION (& Friends)</h1>
+        <label for="model">Select Model:</label>
+        <select name="model" id="model" onchange="updateTaskType()">
+            <option value="local" selected>Local SEA-LION 3B</option>
+            <option value="ollama">SEA-LION 7B Instruct (Ollama Server)</option>
+            <option value="tgi-sealion">SEA-LION 7B Instruct (TGI Inference Farm)</option>
+            <option value="tgi-llama">Llama 3 8B Instruct (TGI Inference Farm)</option>
+        </select>
+        <br><br>
         <label for="taskType">Task Type:</label>
-        <select id="taskType" onchange="updateTaskType()">
-            <option value="textGeneration" selected>Text Generation</option>
-            <option value="questionAnswer">Question and Answer</option>
+        <select id="taskType" onchange="updateLanguage()">
+            <option value="textGeneration" id="textGeneration">Text Generation</option>
+            <option value="questionAnswer" selected>Question and Answer</option>
             <option value="translation">Translation</option>
         </select><br>
 
@@ -67,6 +75,7 @@
             // First, empty the div element "output" so it won't retain the previous answer
             document.getElementById('output').innerText = 'Processing...';
 
+            const model=document.getElementById('model').value;
             const prompt = document.getElementById('prompt').value;
             const purpose = document.getElementById('taskType').value;
             const language = document.getElementById('language').value;
@@ -79,6 +88,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    model,
                     prompt,
                     purpose,
                     language,
@@ -92,6 +102,17 @@
         }
 
         function updateTaskType() {
+            var model = document.getElementById("model").value;
+            var textGeneration = document.getElementById('textGeneration');
+
+            if (model != "local") {
+                textGeneration.style.display = "none";
+            } else {
+                textGeneration.style.display = "";
+            }
+        }
+
+        function updateLanguage() {
             var taskType = document.getElementById("taskType").value;
             var languageDropdown = document.getElementById("languageDropdown");
 
