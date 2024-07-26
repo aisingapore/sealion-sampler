@@ -1,3 +1,25 @@
+"""
+sealion_3b_app.py
+-----------------
+
+Script for running Flask app to send POST requests to local model or server
+
+Routes:
+    - @app.route("/"): Renders the home page.
+    - @app.route("/generate", methods=["POST"]): Receives a POST request and returns generated text.
+
+Functions:
+    - home: Renders the home page for the Flask app.
+    - generate_text: Receives a POST request, processes the input, and returns generated text.
+    - local_gen_text: Passes inputs from the Flask app to the locally run model,
+        returning the predicted text output.
+    - oll_gen_text: Passes inputs from the Flask app to the model running on ollama,
+        returning the predicted text output.
+    - tgi_gen_text: Passes inputs from the Flask app to the model running on TGI server,
+        returning the predicted text output.
+
+
+"""
 import os
 
 import requests
@@ -26,11 +48,24 @@ model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_re
 
 @app.route("/")
 def home():
+    """Generates the home page for the Flask app.
+
+    Returns:
+        str:  The rendered HTML of the home page.
+    """
     return render_template("index.html")
 
 
 @app.route("/generate", methods=["POST"])
 def generate_text():
+    """Receives a POST request from the Flask app frontend.
+
+    Inputs from the form are received, the prompt is enhanced according to the
+    intended purpose, and then sent to the model of choice.
+
+    Returns:
+        Response: A JSON response containing the generated text.
+    """
     data = request.json
     model = data.get("model", "local")
     prompt = data.get("prompt", "")
@@ -67,6 +102,19 @@ def generate_text():
 
 
 def local_gen_text(prompt, max_tokens, temperature, stop_strings, purpose):
+    """Passes inputs from the Flask app to the locally run model, returning the predicted text output.
+
+    Args:
+        prompt (str): Input prompt from Flask app, after processing
+        max_tokens (int): The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt.
+        temperature (float): The value used to modulate the next token probabilities.
+        stop_strings (str or List[str]): A string or a list of strings that should terminate generation
+            if the model outputs them.
+        purpose (str): The role the model is playing (E.g. textGeneration,questionAnswer)
+
+    Returns:
+        gen_text (str): processed output response from model
+    """
     # Tokenize input prompt
     tokens = tokenizer(text=prompt, return_tensors="pt")
 
@@ -96,6 +144,16 @@ def local_gen_text(prompt, max_tokens, temperature, stop_strings, purpose):
 
 
 def oll_gen_text(prompt, temperature, max_tokens):
+    """Passes inputs from the Flask app to the model running on ollama, returning the predicted text output.
+
+    Args:
+        prompt (str): Input prompt from Flask app, after processing
+        temperature (float): The value used to modulate the next token probabilities.
+        max_tokens (int): The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt.
+
+    Returns:
+        str: processed output response from model for successful response, or returns error message if otherwise.
+    """
     print("Using ollama model")
     # Read API_URL and API_MODEL from environment variables
     payload = {
@@ -115,6 +173,18 @@ def oll_gen_text(prompt, temperature, max_tokens):
 
 
 def tgi_gen_text(prompt, model, temperature, max_tokens):
+    """Passes inputs from the Flask app to the model running on TGI server, returning the predicted text output.
+
+    Args:
+        prompt (str): Input prompt from Flask app, after processing
+        model (str): Choice of model on server (if running multiple models)
+        temperature (float): The value used to modulate the next token probabilities.
+        max_tokens (int): The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt.
+
+    Returns:
+        str: processed output response from model for successful response, or returns error message if otherwise.
+    """
+
     print("Using tgi inference server")
     model_list = {"tgi-sealion": TGI_SEALION, "tgi-llama": TGI_LLAMA}
     model_choice = model_list.get(model)
