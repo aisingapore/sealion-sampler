@@ -30,7 +30,7 @@ repos:
       rev: 6.0.0
       hooks:
         - id: flake8
-          exclude: ^src/sealion_3b_langchain\.py$ 
+          exclude: ^src/example_script\.py$ 
           args: # arguments to configure flake8
             # making isort line length compatible with black
             - "--max-line-length=120"

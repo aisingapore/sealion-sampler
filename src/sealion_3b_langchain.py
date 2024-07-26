@@ -1,5 +1,3 @@
-# please use transformers 4.34.1
-from langchain.chains.llm import LLMChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import HuggingFacePipeline
@@ -24,7 +22,8 @@ model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_re
 # print(chain.invoke("The sea lion is a"))
 
 # Output(PASS):
-"""The sea lion is a marine mammal that is found in the Pacific Ocean. It is a large animal that is about 10 feet long and weighs about 1,0"""
+"""The sea lion is a marine mammal that is found in the Pacific Ocean.
+It is a large animal that is about 10 feet long and weighs about 1,0"""
 
 # Summarization: Seems to be unable to support summarization via pipeline.
 # pipe=pipeline(
@@ -36,10 +35,21 @@ model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_re
 
 # local_llm = HuggingFacePipeline(pipeline=pipe)
 
-# print(local_llm("Sea lions are pinnipeds characterized by external ear flaps, long foreflippers, the ability to walk on all fours, short and thick hair, and a big chest and belly. Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion) in five genera. Their range extends from the subarctic to tropical waters of the global ocean in both the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean."))
+# print(local_llm("Sea lions are pinnipeds characterized by external ear flaps,
+# long foreflippers, the ability to walk on all fours, short and thick hair,
+# and a big chest and belly. Together with the fur seals, they make up the family Otariidae,
+# eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion)
+# in five genera. Their range extends from the subarctic to tropical waters of the global
+# ocean in both the Northern and Southern Hemispheres, with the notable exception of the
+# northern Atlantic Ocean."))
 
 # Output(FAIL):
-"""Sea lions are pinnipeds characterized by external ear flaps, long foreflippers, the ability to walk on all fours, short and thick hair, and a big chest and belly. Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion) in five genera. Their range extends from the subarctic to tropical waters of the global ocean in both the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean.
+"""Sea lions are pinnipeds characterized by external ear flaps, long foreflippers,
+the ability to walk on all fours, short and thick hair, and a big chest and belly.
+Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions
+have six extant and one extinct species (the Japanese sea lion) in five genera.
+Their range extends from the subarctic to tropical waters of the global ocean in both
+the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean.
 The sea lions are the largest pinnipeds in the world, with a body mass of 1,000–1,50"""
 
 # For Questioning
@@ -75,13 +85,18 @@ A mammal is a type of animal that has a backbone."""
 # print("######## Print chain.invoke\n")
 # print(chain.invoke(
 #     """
-#     'Sea lions are pinnipeds characterized by external ear flaps, long foreflippers, the ability to walk on all fours, short and thick hair, and a big chest and belly. Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions have six extant and one extinct species (the Japanese sea lion) in five genera. Their range extends from the subarctic to tropical waters of the global ocean in both the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean.'
+#     'Sea lions are pinnipeds characterized by external ear flaps, long foreflippers,
+# the ability to walk on all fours, short and thick hair, and a big chest and belly.
+# Together with the fur seals, they make up the family Otariidae, eared seals. The sea lions
+# have six extant and one extinct species (the Japanese sea lion) in five genera. Their range
+# extends from the subarctic to tropical waters of the global ocean in both
+# the Northern and Southern Hemispheres, with the notable exception of the northern Atlantic Ocean.'
 #     """
 # ))
 
 # Output:
 """
- 
+
 
 
 *
@@ -116,10 +131,12 @@ print(
 
 # Output(PASS):
 """
-'Pada suatu masa dahulu, terdapat satu keluarga yang miskin dan ayahnya bekerja sebagai buruh di ladang getah.Dalam hidup ini, Allah telah memberikan kita semua peluang untuk berjaya.'
-        
+'Pada suatu masa dahulu, terdapat satu keluarga yang miskin dan ayahnya bekerja sebagai buruh di ladang getah.
+Dalam hidup ini, Allah telah memberikan kita semua peluang untuk berjaya.'
 
-In English, this translates to: 
 
-'In the past, there was a family that was poor and the father worked as a labourer in the rubber plantation. In life, Allah
+In English, this translates to:
+
+'In the past, there was a family that was poor and the father worked as a labourer in the rubber plantation.
+In life, Allah
 """
