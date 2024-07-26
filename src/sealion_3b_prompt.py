@@ -1,4 +1,9 @@
-# please use transformers 4.34.1
+"""
+This script uses the Sea Lion 3B model from AISingapore to generate text based
+on an input prompt. It demonstrates loading a pre-trained model and tokenizer,
+encoding input text into tokens, generating new tokens, and decoding the output.
+"""
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained("aisingapore/sea-lion-3b", trust_remote_code=True)
