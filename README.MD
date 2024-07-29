@@ -27,7 +27,7 @@ Open your terminal and execute the following commands:
 
 ```sh
 # Create a new conda environment
-conda create -n sealion_env python=3.9
+conda create -n sealion_env python=3.12
 
 # Activate the environment
 conda activate sealion_env
