@@ -35,9 +35,9 @@ OLL_API_URL = os.getenv("OLL_API_URL")
 OLL_API_MODEL = os.getenv("OLL_API_MODEL")
 # For TGI inference server with multiple models
 TGI_API_URL = os.getenv("TGI_API_URL")
-TGI_API_KEY = os.getenv("TGI_API_KEY")
+TGI_API_KEY = os.getenv("TGI_API_KEY", default=None)
 TGI_SEALION = os.getenv("TGI_SEALION")
-TGI_LLAMA = os.getenv("TGI_LLAMA")
+TGI_LLAMA = os.getenv("TGI_LLAMA", default=None)
 
 app = Flask(__name__)
 
