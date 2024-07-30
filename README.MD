@@ -24,7 +24,16 @@ The scripts provided have been tested in the following environments:
 
 ### Creation of Virtual Environment
 Open your terminal and execute the following commands:
+#### To create with `sealion_env.yml`
+```sh
+# Create a new conda environment
+conda env create -f sealion_env.yml
 
+# Activate the environment
+conda activate sealion_env
+```
+
+#### To create with `requirements.txt`
 ```sh
 # Create a new conda environment
 conda create -n sealion_env python=3.12
@@ -32,8 +41,6 @@ conda create -n sealion_env python=3.12
 # Activate the environment
 conda activate sealion_env
 ```
-
-### Installation of Required Packages
 Ensure you have requirements.txt in your project directory. Run:
 
 ```sh
