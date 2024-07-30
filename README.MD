@@ -87,7 +87,7 @@ Press CTRL+C to quit
 #### Model selection
 ![dropdown list for model selection](graphics/modelselection.png)<br>
 There are 3 types of models made available for selection:
-- <b>Locally run model</b>: Run directly from the Python script via HuggingFace Transformers, currently configured to run [`sea-lion-3b`](https://huggingface.co/aisingapore/sea-lion-3b) model. Able to run on CPU.
+- <b>Locally run model</b>: Run directly from the Python script via HuggingFace Transformers, currently configured to run [`sea-lion-3b`](https://huggingface.co/aisingapore/sea-lion-3b) model under `LOCAL_MODEL` in `env.example`. Able to run on CPU.
 - <b>Model on Ollama server</b>: This selection is configured to work with a model running on Ollama server. `OLL_API_URL` in `.env.example` is currently set to [default local address](https://github.com/ollama/ollama/blob/main/docs/api.md#request). `OLL_API_MODEL` should be set to the model name as per what was set in the Ollama [Modelfile](https://github.com/ollama/ollama/blob/0e4d653687f81db40622e287a846245b319f1fbe/docs/modelfile.md#basic-modelfile).
 - <b>Multiple models on online server (TGI)</b>: This selection is configured to work with multiple models running on a TGI server with API Key authentication. `TGI_API_URL` should be set to the endpoint URL. `TGI_API_KEY` should be set to the API Key required, remove if no authentication used, it will default to `None`. Update the respective model names used in the server to `TGI_SEALION` and `TGI_LLAMA`. If only one model is used, remove `TGI_LLAMA`, it will default to `None`.
 

@@ -30,6 +30,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 # Load environment variables from .env file
 load_dotenv()
 
+# Get the model name for running locally
+LOCAL_MODEL = os.getenv("LOCAL_MODEL", default="aisingapore/sea-lion-3b")
 # Get the API URL and model from environment variables
 OLL_API_URL = os.getenv("OLL_API_URL")
 OLL_API_MODEL = os.getenv("OLL_API_MODEL")
@@ -40,10 +42,6 @@ TGI_SEALION = os.getenv("TGI_SEALION")
 TGI_LLAMA = os.getenv("TGI_LLAMA", default=None)
 
 app = Flask(__name__)
-
-# Load the tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained("aisingapore/sea-lion-3b", trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained("aisingapore/sea-lion-3b", trust_remote_code=True)
 
 
 @app.route("/")
@@ -115,6 +113,9 @@ def local_gen_text(prompt, max_tokens, temperature, stop_strings, purpose):
     Returns:
         gen_text (str): processed output response from model
     """
+    # Load the tokenizer and model
+    tokenizer = AutoTokenizer.from_pretrained(LOCAL_MODEL, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(LOCAL_MODEL, trust_remote_code=True)
     # Tokenize input prompt
     tokens = tokenizer(text=prompt, return_tensors="pt")
 
