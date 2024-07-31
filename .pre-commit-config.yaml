@@ -1,0 +1,44 @@
+repos:
+    # isort
+    - repo: https://github.com/asottile/seed-isort-config
+      rev: v2.2.0
+      hooks:
+      - id: seed-isort-config
+    - repo: https://github.com/pre-commit/mirrors-isort
+      rev: v5.10.1
+      hooks:
+      - id: isort
+        args:  # Skipping this file#["--profile", "black"]
+          - "--profile"
+          - "black"
+          - "--skip"
+          - "./src/example_script.py" 
+    # black
+    - repo: https://github.com/psf/black
+      rev: 23.3.0
+      hooks:
+        - id: black
+          args: # arguments to configure black
+            - --line-length=120
+            - --include='\.pyi?$'
+            - --exclude='./src/example_script.py'  # Excluding this file
+
+          language_version: python3
+
+    # flake8
+    - repo: https://github.com/pycqa/flake8
+      rev: 6.0.0
+      hooks:
+        - id: flake8
+          exclude: ^src/example_script\.py$ 
+          args: # arguments to configure flake8
+            # making isort line length compatible with black
+            - "--max-line-length=120"
+            - "--max-complexity=18"
+            - "--select=B,C,E,F,W,T4,B9"
+
+            # these are errors that will be ignored by flake8
+            # check out their meaning here
+            # https://flake8.pycqa.org/en/latest/user/error-codes.html
+            # - "--ignore=E203,E266,E501,W503,F403,F401,E402,E722"
+            - "--ignore=E231"
