@@ -33,13 +33,13 @@ load_dotenv()
 # Get the model name for running locally
 LOCAL_MODEL = os.getenv("LOCAL_MODEL", default="aisingapore/sea-lion-3b")
 # Get the API URL and model from environment variables
-OLL_API_URL = os.getenv("OLL_API_URL")
-OLL_API_MODEL = os.getenv("OLL_API_MODEL")
+OLL_API_URL = os.getenv("OLL_API_URL", default="http://localhost:11434/api/chat")
+OLL_API_MODEL = os.getenv("OLL_API_MODEL", default="aisingapore/llama3-8b-cpt-sea-lionv2-instruct")
 # For TGI inference server with multiple models
 TGI_API_URL = os.getenv("TGI_API_URL")
 TGI_API_KEY = os.getenv("TGI_API_KEY", default=None)
-TGI_SEALION = os.getenv("TGI_SEALION")
-TGI_LLAMA = os.getenv("TGI_LLAMA", default=None)
+TGI_MODEL1 = os.getenv("TGI_MODEL1")
+TGI_MODEL2 = os.getenv("TGI_MODEL2", default=None)
 
 app = Flask(__name__)
 
@@ -156,21 +156,43 @@ def oll_gen_text(prompt, temperature, max_tokens):
         str: processed output response from model for successful response, or returns error message if otherwise.
     """
     print("Using ollama model")
+    payload = {}
     # Read API_URL and API_MODEL from environment variables
-    payload = {
-        "model": OLL_API_MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "options": {"temperature": temperature, "max_new_tokens": max_tokens},
-    }
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(OLL_API_URL, json=payload, headers=headers)
+    if "/generate" in OLL_API_URL:
+        print("generate: ", OLL_API_URL)
+        payload = {
+            "model": OLL_API_MODEL,
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": temperature, "num_predict": max_tokens},
+        }
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(OLL_API_URL, json=payload, headers=headers)
 
-    if response.status_code == 200:
-        print(response.text)
-        return response.json().get("response")
+        if response.status_code == 200:
+            print(response.text)
+            return response.json().get("response")
+        else:
+            return f"Error: {response.status_code}"
+
+    elif "/chat" in OLL_API_URL:
+        print("/chat: ", OLL_API_URL)
+        payload = {
+            "model": OLL_API_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+            "options": {"temperature": temperature, "num_predict": max_tokens},
+        }
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(OLL_API_URL, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            print(response.text)
+            return response.json().get("message").get("content")
+        else:
+            return f"Error: {response.status_code}"
     else:
-        return f"Error: {response.status_code}"
+        return f"Error: {OLL_API_URL} this endpoint is not supported. Try api/chat or api/generate."
 
 
 def tgi_gen_text(prompt, model, temperature, max_tokens):
@@ -187,7 +209,7 @@ def tgi_gen_text(prompt, model, temperature, max_tokens):
     """
 
     print("Using tgi inference server")
-    model_list = {"tgi-sealion": TGI_SEALION, "tgi-llama": TGI_LLAMA}
+    model_list = {"tgi-model1": TGI_MODEL1, "tgi-model2": TGI_MODEL2}
     model_choice = model_list.get(model)
     print("Using model: ", model_choice)
     headers = {"Content-Type": "application/json", "x-api-key": TGI_API_KEY}
@@ -224,4 +246,4 @@ def tgi_gen_text(prompt, model, temperature, max_tokens):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

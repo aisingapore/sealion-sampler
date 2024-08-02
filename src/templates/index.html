@@ -35,16 +35,16 @@
         <h1>SEA-LION (& Friends)</h1>
         <label for="model">Select Model:</label>
         <select name="model" id="model" onchange="updateTaskType()">
-            <option value="local" selected>Local SEA-LION 3B</option>
-            <option value="ollama">SEA-LION 7B Instruct (Ollama Server)</option>
-            <option value="tgi-sealion">SEA-LION 7B Instruct (TGI Inference Farm)</option>
-            <option value="tgi-llama">Llama 3 8B Instruct (TGI Inference Farm)</option>
+            <option value="local" selected>Local (Default: SEA-LION 3B)</option>
+            <option value="ollama">Ollama Server (Default: Llama3 8B CPT SEA-LIONv2 Instruct) </option>
+            <option value="tgi-model1">TGI Inference Farm Model 1</option>
+            <option value="tgi-model2">TGI Inference Farm Model 2</option>
         </select>
         <br><br>
         <label for="taskType">Task Type:</label>
         <select id="taskType" onchange="updateLanguage()">
-            <option value="textGeneration" id="textGeneration">Text Generation</option>
-            <option value="questionAnswer" selected>Question and Answer</option>
+            <option value="textGeneration" id="textGeneration" selected>Text Generation</option>
+            <option value="questionAnswer">Question and Answer</option>
             <option value="translation">Translation</option>
         </select><br>
 
@@ -103,12 +103,15 @@
 
         function updateTaskType() {
             var model = document.getElementById("model").value;
-            var textGeneration = document.getElementById('textGeneration');
+            var textGeneration = document.getElementById("textGeneration");
+            var maxTokens = document.getElementById("max_tokens");
 
             if (model != "local") {
-                textGeneration.style.display = "none";
+                textGeneration.textContent = "Text Input";
+                maxTokens.value = 128;
             } else {
-                textGeneration.style.display = "";
+                textGeneration.textContent = "Text Generation";
+                maxTokens.value = 40;
             }
         }
 
