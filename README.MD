@@ -157,7 +157,7 @@ There are 3 types of models made available for selection:
 Currently there are three functions available, which prompt the base LLM differently:
 - Text Generation/Input: No additional template, LLM proceeds with text generation, continuing from where the input prompt ends. For base models, it should return the initial prompt, continued with the generated text. For chat/instruct-tuned models, they should return a response to the prompt.
 - Question and Answer: Prompt is input to a `Question: {prompt} Answer:` template
-- Translation: An additional `Language` option will be provided (Default: `English`). Prompt is input to a `'{prompt}' In {language}, this translates to:` template. To date, performance is still sub-par and pending further experimentation. <br>
+- Translation: An additional `Language` option will be provided (Default: `English`). Prompt is input to a `'{prompt}' In {language}, this translates to:` template. <br>
 ![dropdown list for language selection](graphics/language.png)
 
 
