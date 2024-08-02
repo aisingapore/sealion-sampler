@@ -14,7 +14,10 @@
 - [For Further Exploration](#for-further-exploration)
 
 ## Introduction
-This repository contains basic scripts for running the SEA-LION base LLM locally, as well as sending requests to the SEA-LION Instruct models running on Ollama/TGI servers. It has been tested with the [SEA-LION-3B](https://huggingface.co/aisingapore/sea-lion-3b) base LLM, as well as quantized GGUF files for 7b/[8b instruct models](https://huggingface.co/aisingapore/llama3-8b-cpt-sea-lionv2-instruct-gguf) on the server side. The scripts available facilitate running prompts in the terminal, as well as running text completion/input, question and answer, and translation via a Flask app.
+This repository contains basic scripts for running the SEA-LION base LLM locally, as well as sending requests to the SEA-LION Instruct models running on Ollama/TGI servers. It has been tested with the [SEA-LION-3B](https://huggingface.co/aisingapore/sea-lion-3b) base LLM, as well as quantized GGUF files for 7b/[8b instruct models](https://huggingface.co/aisingapore/llama3-8b-cpt-sea-lionv2-instruct-gguf) on the server side. The scripts available facilitate running prompts in the terminal, as well as running text completion/input, question and answer, and translation via a Flask app.<br>
+
+Do check out the range of SEA-LION models available at https://huggingface.co/aisingapore/<br>
+Also available on Ollama at https://ollama.com/aisingapore
 
 ## Specifications
 The scripts provided have been tested in the following environments:
@@ -98,25 +101,27 @@ Make sure the full model name is updated under `OLL_API_MODEL` in your `.env` fi
 ```
 OLL_API_MODEL=aisingapore/llama3-8b-cpt-sea-lionv2-instruct
 ```
+<i>Note: Ollama should be running before starting up the Flask app, if not the server would not be up. Running any of the commands should suffice in starting up Ollama, e.g. `ollama list`</i>
+
 ### Starting up the Flask App
 To start up the Flask app:
 
 ```sh
-flask -A src.sealion_3b_app run
+flask -A src.sealion_app run
 ```
 To make the app accessible from other machines by exposing ports:
 ```sh
-flask -A src.sealion_3b_app run --host '0.0.0.0'
+flask -A src.sealion_app run --host '0.0.0.0'
 ```
 <i>Note: Exposing your Flask app to '0.0.0.0' makes it accessible from any device on the network, which can introduce security risks. Ensure you have proper security measures in place.</i><br>
 
 Alternatively: Running via Python script (Will run in debug mode and expose ports):
 ```sh
-python src.sealion_3b_app.py
+python src.sealion_app.py
 ```
 Once the terminal returns the following, you should proceed to access the app via [port 5000](http://127.0.0.1:5000):
 ```sh
- * Serving Flask app 'src.sealion_3b_app'
+ * Serving Flask app 'src.sealion_app'
  * Debug mode: off
 WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
  * Running on http://127.0.0.1:5000
@@ -132,7 +137,7 @@ On macOS, try disabling the 'AirPlay Receiver' service from System Preferences -
 ```
 Try assigning the Flask app to a different port instead:
 ```sh
-flask -A src.sealion_3b_app run --host '0.0.0.0' --port 5050
+flask -A src.sealion_app run --host '0.0.0.0' --port 5050
 ```
 If running via Python script, do update the port (located at the end of script):
 ```python
